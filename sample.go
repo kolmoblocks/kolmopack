@@ -27,7 +27,6 @@ func main() {
 	}
 
 	wasm.SetDebugMode(*verbose)
-
 	run(os.Stdout, flag.Arg(0), *verify)
 }
 
