@@ -1,17 +1,36 @@
 #define WASM_EXPORT __attribute__((visibility("default")))
 
+char encoded_data[1000];
+int encoded_data_size;
+
+WASM_EXPORT
+char* get_encoded_data_offset() {
+  return &encoded_data[0];
+}
+
+WASM_EXPORT
+void set_encoded_data_size(int size) {
+  encoded_data_size = size;
+}
+
+
+char decoded_data[10000];
+int decoded_data_size;
+WASM_EXPORT
+char* get_decoded_data_offset() {
+  return &decoded_data[0];
+}
+
+WASM_EXPORT
+int get_decoded_data_size(int size) {
+  return decoded_data_size;
+}
+
 void consoleLog (char num);
 
 typedef int bool;
 #define true 1
 #define false 0
-
-typedef struct huffman_node_t
-{
-    char value;          /* character(s) represented by this entry */
-    struct huffman_node_t *left, *right;
-} huffman_node_t;
-
 
 char huffman_tree_serialized[20];
 int rightmost=1;
@@ -20,11 +39,17 @@ char* getHuffmanOffset() {
   return &huffman_tree_serialized[0];
 }
 
+
+typedef struct huffman_node_t
+{
+    char value;          /* character(s) represented by this entry */
+    struct huffman_node_t *left, *right;
+} huffman_node_t;
+
+
 // malloc huffman tree
 huffman_node_t h_malloc[20];
 int h_malloc_pos;
-
-
 
 huffman_node_t *allocateNode(int pos) {
   huffman_node_t *hn;
@@ -46,13 +71,6 @@ huffman_node_t *allocateNode(int pos) {
 }
 
 
-bool encoded[] = {true, false, true, false, false, true};
-
-char outStr[20];
-WASM_EXPORT
-char* getStrOffset () {
-  return &outStr[0];
-}
 
 
 WASM_EXPORT
@@ -77,8 +95,9 @@ void decodeHuffman()
      // its a huffman tree leaf:
      // 1. write the symbol
      // 2. reset the huffman tree cursor
-     outStr[out_cur] = c->value;
+     decoded_data[out_cur] = c->value;
      out_cur++;
+     decoded_data_size = out_cur;
      c = tree;
    }
 }
