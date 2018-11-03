@@ -1,10 +1,13 @@
-import sys
+#!/usr/bin/env python3
+
+import argparse
 import queue
 import heapq
 import struct
+import kolmo
 
 FREQUENCY_THRESHOLD = 1
-SYMBOL_SIZE = 1 
+TMP_FILE = 'out/cur'
 
 def get_counts(symbol_size, target):
     counts = {}
@@ -23,10 +26,6 @@ def print_counts():
         print("{} [{}]: {:,}".format(repr(symbol), symbol.encode('hex'), count))
 
 
-class Node():
-    def __init__(self, left=None, right=None, root=None):
-        self.left = left
-        self.right = right
 
 
 def build_huffman(counts):
@@ -60,32 +59,41 @@ def generate_encoding(tree):
 
 def save_encoding_table(codes):
     sorted_table = sorted(codes.items(), key=lambda x:len(x[1]))
-    with open('data/encoding_table_{}.txt'.format(SYMBOL_SIZE), 'w') as et_file: 
+    with open(TMP_FILE, 'w') as et_file: 
         for symbol,representation in sorted_table:
             et_file.write("{}|{}\n".format(representation, repr(symbol)))
+    kolmo.name_by_content(TMP_FILE, {
+        "MIME": "text/plain",
+        "tag": "huffman_encoding_table",  
+        }
+    )
+        
 
 
-def save_huffman_tree(tree):
-    with open('data/huffman_tree_{}.bin'.format(SYMBOL_SIZE), 'wb') as ht_file:
+def save_huffman_tree(tree, token_size):
+    with open(TMP_FILE, 'wb') as ht_file:
         stack = [tree]
         while len(stack) > 0:
             (_, node) = stack.pop()
             if isinstance(node, bytes):
                 ht_file.write(node)
                 continue
-            ht_file.write(str.encode("\0"*SYMBOL_SIZE))
+            ht_file.write(str.encode("\0"*token_size))
             stack.append(node[1])
             stack.append(node[0])
+    kolmo.name_by_content(TMP_FILE, {
+        "MIME": "application/octet-stream",
+        "tag": "huffman_encoding_table binary serialized",
+        "token_size": token_size,  
+        }
+    )
 
 
-        
-
-
-def save_compressed_data(symbol_size, codes,target):
+def save_compressed_data(symbol_size, codes, target_file):
     current = ""
-    with open('data/compressed_data_{}.txt'.format(SYMBOL_SIZE), 'w') as txt_cd_file: 
+    with open(TMP_FILE, 'w') as txt_cd_file: 
         while True:
-            cur = target.read(symbol_size)
+            cur = target_file.read(symbol_size)
             if len(cur)==0:
                 break
             if cur in codes:
@@ -95,23 +103,41 @@ def save_compressed_data(symbol_size, codes,target):
                 representation = codes[b'\a'] + literal 
             txt_cd_file.write(representation)
             current += representation
+    kolmo.name_by_content(TMP_FILE, {
+        "MIME": "text/plain",
+        "tag": "huffman_encoded data human-readable",
+        "token_size": symbol_size,  
+        }
+    )
+
     num_of_bytes = len(current) // (8)
-    with open('data/compressed_data_{}.bin'.format(SYMBOL_SIZE), 'wb') as cd_file: 
+    with open(TMP_FILE, 'wb') as cd_file: 
         for i in range(num_of_bytes):
             bytes = current[8*i:8*(i+1)]
-            # import pdb; pdb.set_trace()
             int_value = int(bytes, base=2)
             cd_file.write(int_value.to_bytes(1,'little'))
-        tail = current[8*num_of_bytes:]
+    kolmo.name_by_content(TMP_FILE, {
+        "MIME": "application/octet-stream",
+        "tag": "huffman_encoded data binary",
+        "token_size": symbol_size,  
+        }
+    )
 
-with open(sys.argv[1],'rb') as input_file: 
-    cs = get_counts(SYMBOL_SIZE, input_file)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--token_size', dest='token_size',default=1, type=int)
+parser.add_argument('--target', dest='target', type=str)
+args = parser.parse_args()
+
+
+with open(args.target,'rb') as input_file: 
+    cs = get_counts(args.token_size, input_file)
 
 huffman_tree = build_huffman(cs)
-save_huffman_tree(huffman_tree)
+save_huffman_tree(huffman_tree, args.token_size)
 encoding_table = generate_encoding(huffman_tree)
 save_encoding_table(encoding_table)
-with open(sys.argv[1],'rb') as input_file: 
-    save_compressed_data(SYMBOL_SIZE, encoding_table, input_file)
+with open(args.target,'rb') as input_file: 
+    save_compressed_data(args.token_size, encoding_table, input_file)
 
 
