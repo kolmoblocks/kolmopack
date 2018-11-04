@@ -81,7 +81,7 @@ def save_huffman_tree(tree, token_size):
             ht_file.write(str.encode("\0"*token_size))
             stack.append(node[1])
             stack.append(node[0])
-    kolmo.name_by_content(TMP_FILE, {
+    return kolmo.name_by_content(TMP_FILE, {
         "MIME": "application/octet-stream",
         "tag": "huffman_encoding_table binary serialized",
         "token_size": token_size,  
@@ -116,7 +116,7 @@ def save_compressed_data(symbol_size, codes, target_file):
             bytes = current[8*i:8*(i+1)]
             int_value = int(bytes, base=2)
             cd_file.write(int_value.to_bytes(1,'little'))
-    kolmo.name_by_content(TMP_FILE, {
+    return kolmo.name_by_content(TMP_FILE, {
         "MIME": "application/octet-stream",
         "tag": "huffman_encoded data binary",
         "token_size": symbol_size,  
@@ -134,10 +134,12 @@ with open(args.target,'rb') as input_file:
     cs = get_counts(args.token_size, input_file)
 
 huffman_tree = build_huffman(cs)
-save_huffman_tree(huffman_tree, args.token_size)
+htree_serialized_hash = save_huffman_tree(huffman_tree, args.token_size)
 encoding_table = generate_encoding(huffman_tree)
 save_encoding_table(encoding_table)
 with open(args.target,'rb') as input_file: 
-    save_compressed_data(args.token_size, encoding_table, input_file)
+    encoded_data_hash = save_compressed_data(args.token_size, encoding_table, input_file)
+
+kolmo.generate_huffman_manifest(args.target, args.token_size, encoded_data_hash, htree_serialized_hash)
 
 

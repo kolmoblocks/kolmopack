@@ -1,0 +1,13 @@
+{
+    "_target_id": "7cfd5747dd92443a30e230caf3f092a9b9880096f0d51d13433a9957c8d546d4",
+    "_target_size": 18133,
+    "_target_tag": "examples/chapter1.txt",
+    "kolmoblocks": {
+        "7ec01b638": {
+            "encoded_data": "036f11117ba7979f0611ff3be97f2c09a846a0f9f7401a6b23008cdef7537904",
+            "encoding_table_id": "b638c752ea0ca05090661f7ec1e6ae0ae8d5cf43a52a89f38014db9bf2034e85",
+            "symbol_size": 1,
+            "wasm_id": "7ec006317196777f657837df911e0ea1efe405d3655aaaa2023ae26ae8aafd26"
+        }
+    }
+}
