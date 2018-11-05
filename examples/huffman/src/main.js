@@ -2,7 +2,7 @@ canvas = document.getElementById("container");
 canvas.textContent = "old style";
 
 async function loadKolmoblock() {
-    const wasm_response = await fetch('../out/main.wasm');
+    const wasm_response = await fetch('../out/huffman2.wasm');
     const buffer = await wasm_response.arrayBuffer();
 
     const huffmanTableResponse = await fetch('../data/huffman_tree_1.bin');

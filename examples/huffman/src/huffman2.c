@@ -1,5 +1,5 @@
 #define WASM_EXPORT __attribute__((visibility("default")))
-
+#define TOKEN_SIZE 2
 
 void consoleLog(unsigned int num);
 void consoleRightmostLog(unsigned int num);
@@ -54,14 +54,13 @@ int* getHuffmanOffset() {
 
 typedef struct huffman_node_t
 {
-    char value;          /* character(s) represented by this entry */
-    char leaf;           //  fuck you, C, you are idiotic
+    char value[TOKEN_SIZE];          /* character(s) represented by this entry */
     struct huffman_node_t *left, *right;
 } huffman_node_t;
 
 
 // malloc huffman tree
-huffman_node_t h_malloc[20000];
+huffman_node_t h_malloc[200000];
 int h_malloc_pos=0;
 
 int rightmost;
@@ -73,24 +72,21 @@ int* get_righmost_offset() {
 
 huffman_node_t *allocateNode(int level) {
   huffman_node_t *hn;
-  // consoleLevelLog(level);
 
   hn = &h_malloc[h_malloc_pos];
   h_malloc_pos++;
-  hn->leaf=0;
+  
   if (huffman_tree_serialized[rightmost] != '\0') {
-        hn->leaf=1;
-        hn->value = huffman_tree_serialized[rightmost];
+    for (int j=0; j< TOKEN_SIZE; j++) {
+        hn->value[j] = huffman_tree_serialized[rightmost];
         rightmost++;
+    }
         // consoleLog(hn->value);
-        return hn;
+    return hn;
   }
-  rightmost++;
+  rightmost+= TOKEN_SIZE;
   // consoleLog(hn->value);
   hn->left = allocateNode(level+1);
-  if (level==0) {
-    consoleRightmostLog(rightmost);
-  }
   hn->right = allocateNode(level+1);
   return hn;
 }
@@ -126,23 +122,25 @@ void decodeHuffman()
 
 
    for (unsigned int i = 0; i < encoded_data_size*8; i++) {
-     // read the next bit within the encoded data
-     if (check_encoded_data_bit(i)) {
+      // read the next bit within the encoded data
+      if (check_encoded_data_bit(i)) {
        c = c->right;
-     } else {
-       c = c->left;
-     }
+      } else {
+        c = c->left;
+      }
 
-     if (c->left) {
-      continue;
-     }
+      if (c->left) {
+       continue;
+      }
 
       // its a huffman tree leaf:
       // 1. write the symbol
       // 2. reset the huffman tree cursor
-      decoded_data[out_cur] = c->value;
-      out_cur++;
-      decoded_data_size = out_cur;
+      for (int j=0; j< TOKEN_SIZE; j++) {
+          decoded_data[out_cur] = c->value[j];
+          out_cur++;
+          decoded_data_size = out_cur;
+      }
       c = tree;
    }
 }
