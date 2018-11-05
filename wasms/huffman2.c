@@ -136,6 +136,28 @@ void decodeHuffman()
       // its a huffman tree leaf:
       // 1. write the symbol
       // 2. reset the huffman tree cursor
+      if (c->value[0]=='\a') {
+        i+= 1;
+        for (int j=0; j< TOKEN_SIZE; j++) {
+          int next_bit_pos = 0;
+          char scope_value = 0;
+          while (next_bit_pos < 8) {
+            if (check_encoded_data_bit(i+ next_bit_pos)) {
+              char mask = 1<<(7-next_bit_pos);
+              scope_value = scope_value | mask;
+            }
+            next_bit_pos++;
+          }
+          i += 8;
+          decoded_data[out_cur] = scope_value;
+          out_cur++;
+          decoded_data_size = out_cur;
+        }
+        i--;
+        c = tree;
+        continue;
+      }
+
       for (int j=0; j< TOKEN_SIZE; j++) {
           decoded_data[out_cur] = c->value[j];
           out_cur++;

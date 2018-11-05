@@ -114,7 +114,9 @@ def save_compressed_data(symbol_size, codes, target_file):
             else:
                 literal = ""
                 for each in cur:
-                    literal += bin(each)[2:]
+                    prefix = bin(each)[2:]
+                    zero_padding = "0"*(8-len(prefix)) 
+                    literal += zero_padding + prefix
                 representation = codes[b'\a'* symbol_size] + literal 
             txt_cd_file.write(representation)
             current += representation
@@ -153,7 +155,7 @@ if args.huffmantree == "":
     huffman_tree = build_huffman(cs, args.token_size)
     htree_serialized_hash = save_huffman_tree(huffman_tree, args.token_size)
 else:
-    huffman_tree = load_huffman_tree(args.huffmantree, args.token_size)
+    huffman_tree = load_huffman_tree("out/raw/" + args.huffmantree, args.token_size)
     htree_serialized_hash = args.huffmantree    
 
 encoding_table = generate_encoding(huffman_tree)

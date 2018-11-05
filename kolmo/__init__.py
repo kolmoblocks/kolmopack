@@ -31,7 +31,7 @@ def name_by_content(target, attributes):
 # the id of the wasm to decode it
 huffman_wasms = {
    1: "7ec006317196777f657837df911e0ea1efe405d3655aaaa2023ae26ae8aafd26",
-   2: "26c5f098fe93fbf010f927d94c6596d13f15ebc72797b34572c171d3c7ddb143",
+   2: "218d9e3e7cb68d30bfa4189270035597df87282abc2544e1ec4c216cfd6d08d8",
 }
 
 def _generate_manifest_key(attributes):
