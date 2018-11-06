@@ -18,10 +18,10 @@ def get_name_and_size(target):
 def name_by_content(target, attributes):
     hex_identity, size = get_name_and_size(target)
     shutil.copyfile(target, 'out/raw/'+ hex_identity)        
-    with open('out/header/'+hex_identity+'.json', 'w') as header_file:
+    with open('out/public/'+hex_identity+'.json', 'w') as header_file:
         attributes.update({ 
-            "id": hex_identity,
-            "size": size,
+            "target_id": hex_identity,
+            "target_size": size,
         })
         header_file.write(json.dumps(attributes, sort_keys=True, indent=4))
     return hex_identity
@@ -48,9 +48,9 @@ def generate_huffman_manifest(target, symbol_size, huffman_tree, encoded_data):
     }
 
     cur = {
-        "_target_id": hex_identity,
-        "_target_tag": target,
-        "_target_size": size,
+        "target_id": hex_identity,
+        "target_tag": target,
+        "target_size": size,
         "kolmoblocks": {
         }
     }

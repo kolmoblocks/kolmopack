@@ -1,0 +1,25 @@
+{
+    "kolmoblocks": {
+        "218d21ba0": {
+            "encoded_data": "89dcdb16ba98f2cd5a3b44257526eea9350e77eae6da6c06b207c443e1794dbe",
+            "encoding_table_id": "1ba0fa08c46d9dc84eb975c1b379cca4b3e8abb03046918ff41945bec4165813",
+            "symbol_size": 2,
+            "wasm_id": "218d9e3e7cb68d30bfa4189270035597df87282abc2544e1ec4c216cfd6d08d8"
+        },
+        "218d290ec": {
+            "encoded_data": "bf751cdffed2a319c8ccfdad2da3fb990ff4762572fe952047610e2c33299567",
+            "encoding_table_id": "90ec7319dff3815e827bc332ea5ec0b0c828e27fcec32771bd38f9a32c1f1b63",
+            "symbol_size": 2,
+            "wasm_id": "218d9e3e7cb68d30bfa4189270035597df87282abc2544e1ec4c216cfd6d08d8"
+        },
+        "7ec012c79": {
+            "encoded_data": "e75e271298ca6247f26db44fab2399b47fecf555fd2512ea4fe3a16c9d55fd8e",
+            "encoding_table_id": "2c79ef61ca043657e99681d6f1dd54ca6d625911ee8295c0c8ef10222bff1a23",
+            "symbol_size": 1,
+            "wasm_id": "7ec006317196777f657837df911e0ea1efe405d3655aaaa2023ae26ae8aafd26"
+        }
+    },
+    "target_id": "ea344d2090e370ea9d701d5718abebeaad2d314ea55543f48aa1615aefeb5fea",
+    "target_size": 14376,
+    "target_tag": "examples/chapter2.txt"
+}
