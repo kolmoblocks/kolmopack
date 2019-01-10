@@ -1,0 +1,1 @@
+emcc -O1 -o hello.html -s WASM=1 -s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap"]' hello.c
